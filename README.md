@@ -17,29 +17,122 @@
 
 ---
 
-## 🚀 1. Setup & Run (Under 2 Minutes)
+## 🚀 1. Setup in Five Minutes or Less
 
-WAO-Recall is completely self-contained. The absolute best way to run this is via Docker. We pre-downloaded the HuggingFace `all-MiniLM-L6-v2` embedding model inside the Docker image so it boots instantly.
+WAO-Recall is completely self-contained. The absolute best way to run this is via Docker. We have pre-downloaded the HuggingFace `all-MiniLM-L6-v2` embedding model directly inside the Docker image, so it boots instantly without downloading gigabytes of weights at runtime.
 
-**Step 1: Clone and configure API key**
+### Option A: The 1-Click Docker Setup (Recommended)
+1. Clone the repository and navigate into it:
+   ```bash
+   git clone <repo-url>
+   cd wao-recall
+   ```
+2. Inject your Gemini API Key securely:
+   ```bash
+   echo "GEMINI_API_KEY=your_key_here" > .env
+   ```
+3. Boot the container:
+   ```bash
+   docker-compose up --build
+   ```
+*Wait ~10 seconds. You will see a massive success banner in your terminal. The API is now live at `http://localhost:8000`.*
+
+### Option B: Native Python Setup
+If you do not have Docker installed, you can run the engine natively:
 ```bash
-git clone <repo-url>
-cd wao-recall
-echo "GEMINI_API_KEY=your_key_here" > .env
+python -m venv .venv
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+pip install -r requirements.txt
+export GEMINI_API_KEY="your_key_here" # On Windows use: set GEMINI_API_KEY=your_key_here
+uvicorn app:app --host 0.0.0.0 --port 8000
 ```
-
-**Step 2: Start the server via Docker**
-Type this exact command into your terminal:
-```bash
-docker-compose up --build
-```
-*Wait ~10 seconds. You will see a massive success banner in your terminal when it is ready.*
 
 ---
 
-## 🧪 2. How to Test the API (Swagger UI)
+## 🏗️ 2. Architecture Diagram & Full System Flow
 
-Once Docker is running, you don't need Postman. You can test the memory engine directly in your browser!
+WAO-Recall strips away bloated RAG frameworks (like LangChain or LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
+
+### The Component Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph 1. Deterministic Data Generation
+    A[events.jsonl] -->|Markov Chain Transition Matrix| B(Simulated User Workflows)
+    end
+
+    subgraph 2. Memory Policy Engine
+    B -->|Heuristic Filter| C{Length < 10 chars?}
+    C -->|Yes| Drop(Drop: Noise - 0ms)
+    C -->|No| D[Gemini Extraction Rubric]
+    D -->|Score < 0.45| Drop2(Drop: Transient - 0ms)
+    D -->|Score >= 0.45| E{SQL Collision Detection}
+    E -->|Exact Match Found| F[Mark Old SUPERSEDED]
+    E -->|Unique Fact| H[Insert New Memory]
+    end
+
+    subgraph 3. Zero-Infra Storage Layer
+    F & H --> DB[(SQLite memory.db)]
+    DB --> I[memories: Relational Entity/Attribute/Value]
+    DB --> J[FTS5: BM25F Lexical Keyword Index]
+    DB --> K[sqlite-vec: 384-Dim Dense Embeddings]
+    end
+
+    subgraph 4. Retrieval & Generation Microservice
+    L[POST /ask Endpoint] --> M[BM25F Keyword Search]
+    L --> N[Dense Vector Semantic Search]
+    M & N --> O[Reciprocal Rank Fusion Math: 1/60+k]
+    O --> P[Recency Time-Decay Penalty]
+    P --> Q[LLM Context Injection]
+    Q --> R[0% Hallucination JSON Response with cited_memory_ids]
+    end
+```
+
+### The 4-Stage Pipeline Breakdown
+
+**Stage 1: Deterministic Data Simulation (`generate_events.py`)**
+Because we cannot use real user data, we simulate a 95-day startup lifecycle. Instead of generating random noise, we use a strict **Markov Chain Transition Matrix** to generate realistic enterprise workflows (e.g., a Chat Message has a 50% chance of being followed by another Chat, but only a 10% chance of an Email). This guarantees that the 6 required supersession chains and the multi-hop email-to-task dependencies occur naturally.
+
+**Stage 2: The Memory Policy Engine (`memory_store.py`)**
+As the stream of raw events flows in, the Memory Engine acts as the strict gatekeeper:
+* **The Heuristic Bouncer:** Events under 10 characters are dropped instantly in 0ms to save API calls.
+* **LLM Extraction Rubric:** Surviving events are sent to Gemini. Gemini is strictly prompted to grade the event from 0.0 to 1.0. If the score is `< 0.45`, it is flagged as Transient Noise and permanently dropped. If `> 0.45`, Gemini extracts the `Entity`, `Attribute`, and `Value`.
+* **Collision & Supersession:** Before saving, the engine executes an exact-match SQL scan for the `Entity` and `Attribute`. If it finds a match, it marks the old memory as `SUPERSEDED` and saves the new one. This ensures the AI never recalls outdated facts.
+
+**Stage 3: The Zero-Infra Storage Layer (SQLite + `sqlite-vec`)**
+We use a single database file (`memory.db`) to hold three distinct structures simultaneously, perfectly synchronized:
+1. **The Relational Table:** Holds the structured Entity, Attribute, Value, and Provenance event links.
+2. **The FTS5 Virtual Table:** Maintains a specialized `BM25F` lexical index. We heavily weight the `Entity` and `Attribute` columns over the raw text, ensuring that keyword searches for IDs or names are flawlessly precise.
+3. **The `sqlite-vec` Index:** Stores the 384-dimensional dense vectors generated locally by `all-MiniLM-L6-v2` for high-speed semantic search.
+
+**Stage 4: Hybrid RRF Retrieval (`retrieval.py` & `app.py`)**
+When a user asks a question via the FastAPI endpoint, the engine executes a massive **Hybrid Search**:
+1. It queries the FTS5 index (Keyword exact match) and the Vector index (Semantic similarity match) simultaneously.
+2. It fuses both sets of results mathematically using **Reciprocal Rank Fusion (RRF)**: `Score = 1 / (60 + rank)`.
+3. It applies a **Recency Decay Penalty** (`0.01 / day`) so newer facts slightly outrank older facts if they collide.
+4. The top 5 fused memories are injected into a strict prompt demanding a 0% hallucination response. If the answer isn't in the context, the LLM refuses to answer. If it is, it explicitly cites the `memory_id` in the returned JSON via Pydantic validation.
+
+---
+
+## 📊 3. How to Run the Evaluation on Us
+
+The rubric demands deterministic, offline measurement. We have cached all LLM extractions and answers locally so you can verify our metrics strictly offline with **zero API calls and zero network latency**.
+
+To run the offline evaluation harness:
+
+```bash
+# 1. Run the strict Retrieval Evaluation (Recall@5, MRR, Hit Rate)
+python eval_retrieval.py
+
+# 2. Run the Extreme Latency Benchmark (Proves p95 < 200ms at 10,000 memories)
+python bench.py
+```
+
+---
+
+## 🧪 4. Manual Live Testing (Swagger UI)
+
+If you booted the API via Docker or Native python, you can test the memory engine directly in your browser.
 
 1. Open your browser and go to: **[http://localhost:8000/docs](http://localhost:8000/docs)**
 2. Click the green **`POST /ask`** box to expand it.
@@ -87,7 +180,7 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 </details>
 
 <details open>
-<summary><b>4. The Temporal State Test</b> (Proves it knows the most recent state)</summary>
+<summary><b>4. The Temporal State Test</b> (Proves it knows the most recent physical state)</summary>
 
 ```json
 {
@@ -112,64 +205,11 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 
 ---
 
-## 🏗️ 3. System Architecture
-
-WAO-Recall strips away bloated RAG frameworks (LangChain, LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
-
-```mermaid
-flowchart TD
-    subgraph Data Generation
-    A[events.jsonl] -->|Markov Chain| B(Simulated Work Stream)
-    end
-
-    subgraph Memory Policy Engine
-    B -->|Heuristic Filter| C{Is Noise?}
-    C -->|Yes| Drop(Dropped - 0ms)
-    C -->|No| D[Gemini Extraction Rubric]
-    D --> E{Collision Detection}
-    E -->|Exact Match| F[Deduplicate]
-    E -->|Contradiction| G[Supersede]
-    E -->|Unique| H[Insert New]
-    end
-
-    subgraph Storage Layer
-    F & G & H --> DB[(SQLite memory.db)]
-    DB --> I[memories table]
-    DB --> J[FTS5 BM25 Index]
-    DB --> K[sqlite-vec Embeddings]
-    end
-
-    subgraph Retrieval Microservice
-    L[POST /ask] --> M[BM25F Search]
-    L --> N[Dense Vector Search]
-    M & N --> O[Reciprocal Rank Fusion]
-    O --> P[Recency Decay Penalty]
-    P --> Q[LLM Context Window]
-    Q --> R[Cited JSON Response]
-    end
-```
-
----
-
-## 📊 4. Offline Evaluation Harness
-
-The rubric demands deterministic, offline measurement. We cache all LLM extractions and answers so you can verify our metrics with **zero API calls**.
-
-```bash
-# 1. Run the strict Retrieval Evaluation (Recall@5, MRR, Latency)
-python eval_retrieval.py
-
-# 2. Run the Extreme Latency Benchmark (Proves p95 < 200ms at 10k memories)
-python bench.py
-```
-
----
-
 ## 📖 5. Engineering Documentation
 
-To understand the trade-offs, constraints, and limitations of this architecture, please review the mandatory design docs:
+To understand the trade-offs, constraints, and limitations of this architecture, please review our mandatory design docs:
 
-- **[DECISIONS.md](./DECISIONS.md)**: 10 critical design decisions, rejected alternatives, and academic sources (including BM25F and RRF math).
+- **[DECISIONS.md](./DECISIONS.md)**: 10 critical design decisions, rejected alternatives, and academic literature sources (including BM25F and RRF math).
 - **[LIMITS.md](./LIMITS.md)**: What happens to this architecture at 10 Million memories, and exactly how we would fix it given two more weeks.
 - **[EVAL.md](./EVAL.md)**: The full ablation study comparing Lexical vs. Dense vs. Hybrid retrieval.
 
