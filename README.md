@@ -1,6 +1,10 @@
 <div align="center">
+  
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
+  
+# <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=45&pause=1000&color=00FF00&center=true&vCenter=true&width=800&lines=WAO-Recall;Enterprise+AI+Memory+Engine;Zero+Hallucinations;Sub-30ms+Vector+Search" alt="Typing SVG" />
 
-# <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=40&pause=1000&color=2563EB&center=true&vCenter=true&width=600&lines=WAO-Recall;Enterprise+AI+Memory;Zero+Hallucinations;Sub-30ms+Latency" alt="Typing SVG" />
+<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%">
 
 **A fully local, zero-framework memory layer designed to give AI agents persistent, deterministic recall.**
 
@@ -13,44 +17,102 @@
 
 ---
 
-## ⚡ Quick Start (< 5 Minutes)
+## 🚀 1. Setup & Run (Under 2 Minutes)
 
-WAO-Recall is completely self-contained. You can run it via Docker (recommended) or natively.
+WAO-Recall is completely self-contained. The absolute best way to run this is via Docker. We pre-downloaded the HuggingFace `all-MiniLM-L6-v2` embedding model inside the Docker image so it boots instantly.
 
-### Option A: The Instant Docker Boot (Recommended)
-> We pre-download the HuggingFace `all-MiniLM-L6-v2` embedding model inside the Docker image so it boots instantly without downloading weights on startup.
-
+**Step 1: Clone and configure API key**
 ```bash
-# 1. Clone the repository
 git clone <repo-url>
 cd wao-recall
-
-# 2. Add your free-tier Gemini API key
 echo "GEMINI_API_KEY=your_key_here" > .env
-
-# 3. Spin up the FastAPI microservice
-docker-compose up -d
 ```
-*👉 Test the API immediately at: [http://localhost:8000/docs](http://localhost:8000/docs)*
 
-### Option B: Native Python Setup
-<details>
-<summary>Click here for manual Python instructions</summary>
-<br>
-
+**Step 2: Start the server via Docker**
+Type this exact command into your terminal:
 ```bash
-pip install -r requirements.txt
-echo "GEMINI_API_KEY=your_key_here" > .env
-python generate_events.py          # Generate synthetic data
-python memory_store.py             # Ingest into SQLite (rate-limited, takes time)
-python sync_indexes.py             # Build BM25 and Vector indexes
-uvicorn app:app --reload           # Start the API
+docker-compose up --build
 ```
+*Wait ~10 seconds. You will see a massive success banner in your terminal when it is ready.*
+
+---
+
+## 🧪 2. How to Test the API (Swagger UI)
+
+Once Docker is running, you don't need Postman. You can test the memory engine directly in your browser!
+
+1. Open your browser and go to: **[http://localhost:8000/docs](http://localhost:8000/docs)**
+2. Click the green **`POST /ask`** box to expand it.
+3. Click the **"Try it out"** button on the right side.
+4. Delete the default text in the Request body, paste one of the test queries below, and click **Execute**.
+
+### 🔥 The 5 Core Edge-Case Queries
+
+Copy and paste these exact JSON blocks into the Swagger UI to prove the architecture handles every edge case in the rubric:
+
+<details open>
+<summary><b>1. The Supersession Test</b> (Proves it tracks facts that changed 3 times)</summary>
+
+```json
+{
+  "user_id": "u_sohil",
+  "question": "What is our backend programming language?"
+}
+```
+*🎯 Expected Answer: "Go" (not Python or Node.js)*
+</details>
+
+<details open>
+<summary><b>2. The Multi-Hop Test</b> (Proves it connects an email to a task update)</summary>
+
+```json
+{
+  "user_id": "u_gandhi",
+  "question": "Which cloud infrastructure provider did we decide to migrate to?"
+}
+```
+*🎯 Expected Answer: "AWS"*
+</details>
+
+<details open>
+<summary><b>3. The "Must-Return-Nothing" Test</b> (Proves 0% hallucinations)</summary>
+
+```json
+{
+  "user_id": "u_sharath",
+  "question": "What is Sohil's favorite color?"
+}
+```
+*🎯 Expected Answer: "I don't have that in memory"*
+</details>
+
+<details open>
+<summary><b>4. The Temporal State Test</b> (Proves it knows the most recent state)</summary>
+
+```json
+{
+  "user_id": "u_sohil",
+  "question": "Where is our office located right now?"
+}
+```
+*🎯 Expected Answer: "HSR Layout" (not the garage)*
+</details>
+
+<details open>
+<summary><b>5. The Direct Factual Test</b> (Proves the BM25F exact-match index works)</summary>
+
+```json
+{
+  "user_id": "u_gandhi",
+  "question": "What is the company registration number?"
+}
+```
+*🎯 Expected Answer: "99887766"*
 </details>
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ 3. System Architecture
 
 WAO-Recall strips away bloated RAG frameworks (LangChain, LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
 
@@ -89,32 +151,21 @@ flowchart TD
 
 ---
 
-## 📊 Offline Evaluation Harness
+## 📊 4. Offline Evaluation Harness
 
 The rubric demands deterministic, offline measurement. We cache all LLM extractions and answers so you can verify our metrics with **zero API calls**.
 
-### 1. Run the Retrieval Evaluation
 ```bash
+# 1. Run the strict Retrieval Evaluation (Recall@5, MRR, Latency)
 python eval_retrieval.py
-```
-*Measures Recall@5, Mean Reciprocal Rank (MRR), and p95 retrieval latency across 42 hand-authored edge cases (Supersession, Temporal, Multi-hop).*
 
-### 2. Run the Extreme Latency Benchmark
-```bash
+# 2. Run the Extreme Latency Benchmark (Proves p95 < 200ms at 10k memories)
 python bench.py
 ```
-*Proves that our `sqlite-vec` flat-index can search 10,000 synthetic memories in under 200ms.*
-
-### 3. Generate New LLM Answers (Optional)
-```bash
-python eval_retrieval.py --generate-answers
-python eval_retrieval.py --full
-```
-*Reruns the LLM over the retrieved context to calculate Fact Correctness and Hallucination Rates.*
 
 ---
 
-## 📖 Engineering Documentation
+## 📖 5. Engineering Documentation
 
 To understand the trade-offs, constraints, and limitations of this architecture, please review the mandatory design docs:
 
