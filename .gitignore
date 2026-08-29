@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Environment variables (contains API keys!)
+.env
+
+# Database files (generated, not source)
+data/memory.db
+data/bench_temp.db
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Personal / reference files (not project source)
+*.jpeg
+*.pdf
+WhatsApp*
+WAO-Recall*Trial*
