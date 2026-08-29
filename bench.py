@@ -213,7 +213,7 @@ def run_benchmark():
         p50 = np.percentile(latencies, 50)
         p95 = np.percentile(latencies, 95)
         p99 = np.percentile(latencies, 99)
-        status = "✓ PASS" if p95 < 200 else "✗ FAIL"
+        status = "[PASS]" if p95 < 200 else "[FAIL]"
 
         print(f"{name:<25} | {p50:>9.1f}ms | {p95:>9.1f}ms | {p99:>9.1f}ms | {status:>10}")
 

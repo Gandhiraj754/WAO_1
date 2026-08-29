@@ -75,7 +75,7 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 
 ## 🏗️ 2. Architecture Diagram & Full System Flow
 
-WAO-Recall strips away bloated RAG frameworks (like LangChain or LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
+WAO-Recall strips away bloated RAG frameworks (like LangChain or LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25 via BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
 
 ### The Component Architecture Diagram
 
