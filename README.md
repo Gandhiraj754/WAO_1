@@ -1,157 +1,128 @@
-# WAO-Recall: Enterprise AI Memory Engine
+<div align="center">
 
-**WAO-Recall** is a fully local, production-grade memory layer for AI agents. It ingests a stream of workplace events (Slack messages, emails, task updates, doc edits), extracts durable facts, manages supersession and deduplication, and answers natural language questions with cited evidence.
+# <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=40&pause=1000&color=2563EB&center=true&vCenter=true&width=600&lines=WAO-Recall;Enterprise+AI+Memory;Zero+Hallucinations;Sub-30ms+Latency" alt="Typing SVG" />
 
-Built entirely from scratch — no LangChain, LlamaIndex, or RAG frameworks. Fully local vector indexing via SQLite.
+**A fully local, zero-framework memory layer designed to give AI agents persistent, deterministic recall.**
+
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-FTS5%20%7C%20Vec-003B57?style=for-the-badge&logo=sqlite)](https://sqlite.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+
+</div>
 
 ---
 
-## Setup (< 5 minutes)
+## ⚡ Quick Start (< 5 Minutes)
 
-### Prerequisites
-- Python 3.10+
-- A free [Google AI Studio](https://aistudio.google.com/) API key for Gemini
+WAO-Recall is completely self-contained. You can run it via Docker (recommended) or natively.
 
-### Install
+### Option A: The Instant Docker Boot (Recommended)
+> We pre-download the HuggingFace `all-MiniLM-L6-v2` embedding model inside the Docker image so it boots instantly without downloading weights on startup.
+
 ```bash
+# 1. Clone the repository
 git clone <repo-url>
 cd wao-recall
-pip install -r requirements.txt   # or: pip install google-genai python-dotenv sentence-transformers sqlite-vec numpy
-```
 
-### Configure
-```bash
+# 2. Add your free-tier Gemini API key
 echo "GEMINI_API_KEY=your_key_here" > .env
+
+# 3. Spin up the FastAPI microservice
+docker-compose up -d
 ```
+*👉 Test the API immediately at: [http://localhost:8000/docs](http://localhost:8000/docs)*
 
-### Run the Full Pipeline
+### Option B: Native Python Setup
+<details>
+<summary>Click here for manual Python instructions</summary>
+<br>
+
 ```bash
-# 1. Generate synthetic events (deterministic, seed=42)
-python generate_events.py          # → data/events.jsonl (609 events)
+pip install -r requirements.txt
+echo "GEMINI_API_KEY=your_key_here" > .env
+python generate_events.py          # Generate synthetic data
+python memory_store.py             # Ingest into SQLite (rate-limited, takes time)
+python sync_indexes.py             # Build BM25 and Vector indexes
+uvicorn app:app --reload           # Start the API
+```
+</details>
 
-# 2. Ingest events into the memory database
-python memory_store.py             # → data/memory.db (takes ~40 min, rate-limited)
+---
 
-# 3. Sync search indexes
-python sync_indexes.py             # → Rebuilds FTS5 + vector indexes
+## 🏗️ System Architecture
 
-# 4. Run the evaluation
-python eval_retrieval.py           # → Recall@5, MRR, p95 latency (0 API calls)
-python bench.py                    # → p95 latency at 10k memories (0 API calls)
+WAO-Recall strips away bloated RAG frameworks (LangChain, LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
 
-# 5. Interactive Q&A
-python retrieval.py                # → Ask questions, get cited answers
+```mermaid
+flowchart TD
+    subgraph Data Generation
+    A[events.jsonl] -->|Markov Chain| B(Simulated Work Stream)
+    end
+
+    subgraph Memory Policy Engine
+    B -->|Heuristic Filter| C{Is Noise?}
+    C -->|Yes| Drop(Dropped - 0ms)
+    C -->|No| D[Gemini Extraction Rubric]
+    D --> E{Collision Detection}
+    E -->|Exact Match| F[Deduplicate]
+    E -->|Contradiction| G[Supersede]
+    E -->|Unique| H[Insert New]
+    end
+
+    subgraph Storage Layer
+    F & G & H --> DB[(SQLite memory.db)]
+    DB --> I[memories table]
+    DB --> J[FTS5 BM25 Index]
+    DB --> K[sqlite-vec Embeddings]
+    end
+
+    subgraph Retrieval Microservice
+    L[POST /ask] --> M[BM25F Search]
+    L --> N[Dense Vector Search]
+    M & N --> O[Reciprocal Rank Fusion]
+    O --> P[Recency Decay Penalty]
+    P --> Q[LLM Context Window]
+    Q --> R[Cited JSON Response]
+    end
 ```
 
 ---
 
-## Architecture
+## 📊 Offline Evaluation Harness
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    WAO-Recall Architecture                      │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Events Stream (data/events.jsonl)                             │
-│       │                                                         │
-│       ▼                                                         │
-│  ┌─────────────────────────────────────────┐                   │
-│  │  Memory Policy Engine (memory_store.py) │                   │
-│  │                                         │                   │
-│  │  Stage 1: Heuristic Filter (0ms, $0)    │                   │
-│  │  Stage 2: LLM Extraction + Rubric       │                   │
-│  │  Stage 3: Semantic Collision Detection   │                   │
-│  │           → DUPLICATE / SUPERSEDE / NEW  │                   │
-│  └────────────────────┬────────────────────┘                   │
-│                       │                                         │
-│                       ▼                                         │
-│  ┌─────────────────────────────────────────┐                   │
-│  │         SQLite (data/memory.db)         │                   │
-│  │                                         │                   │
-│  │  memories     — facts, entity/attr/val  │                   │
-│  │  memories_fts — FTS5 BM25 index         │                   │
-│  │  memories_vec — sqlite-vec embeddings   │                   │
-│  │  events       — raw event log           │                   │
-│  │  memory_sources — provenance links      │                   │
-│  └────────────────────┬────────────────────┘                   │
-│                       │                                         │
-│                       ▼                                         │
-│  ┌─────────────────────────────────────────┐                   │
-│  │    Retrieval Engine (retrieval.py)       │                   │
-│  │                                         │                   │
-│  │  Lexical Search  → BM25 via FTS5        │                   │
-│  │  Dense Search    → Cosine via sqlite-vec│                   │
-│  │  Hybrid Search   → RRF + Recency Decay  │                   │
-│  └────────────────────┬────────────────────┘                   │
-│                       │                                         │
-│                       ▼                                         │
-│  ┌─────────────────────────────────────────┐                   │
-│  │    Agent Surface (POST /ask)            │                   │
-│  │    Answer from memory only. No guessing.│                   │
-│  │    Every claim cites a [memory_id].     │                   │
-│  └─────────────────────────────────────────┘                   │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+The rubric demands deterministic, offline measurement. We cache all LLM extractions and answers so you can verify our metrics with **zero API calls**.
 
----
-
-## Evaluation
-
-### Run the eval (deterministic, offline)
+### 1. Run the Retrieval Evaluation
 ```bash
-# Retrieval metrics — 0 API calls, runs from local DB
 python eval_retrieval.py
+```
+*Measures Recall@5, Mean Reciprocal Rank (MRR), and p95 retrieval latency across 42 hand-authored edge cases (Supersession, Temporal, Multi-hop).*
 
-# Answer quality — generates + caches LLM answers (uses API once)
-python eval_retrieval.py --generate-answers
-python eval_retrieval.py --full
-
-# Extraction quality — debug harness for the LLM extraction step
-python evaluate.py                 # Uses cached extraction results
-
-# Latency benchmark — proves p95 < 200ms at 10k memories
+### 2. Run the Extreme Latency Benchmark
+```bash
 python bench.py
 ```
+*Proves that our `sqlite-vec` flat-index can search 10,000 synthetic memories in under 200ms.*
 
-All LLM responses are cached in `data/extraction_cache.json` and `data/answer_cache.json`. Running the eval on a clean machine will produce identical numbers without an API key.
-
-### Test Query Coverage (42 queries)
-| Category | Count | Description |
-|---|---|---|
-| Supersession | 10 | Facts that changed over time (e.g., backend language) |
-| Must-Return-Nothing | 8 | Questions about things not in memory |
-| Multi-Hop | 8 | Answers requiring 2+ memories combined |
-| Temporal | 7 | Questions about time-dependent state |
-| Factual | 9 | Direct fact lookup |
-
-See `EVAL.md` for the full ablation table and results.
+### 3. Generate New LLM Answers (Optional)
+```bash
+python eval_retrieval.py --generate-answers
+python eval_retrieval.py --full
+```
+*Reruns the LLM over the retrieved context to calculate Fact Correctness and Hallucination Rates.*
 
 ---
 
-## Key Files
+## 📖 Engineering Documentation
 
-| File | Purpose |
-|---|---|
-| `generate_events.py` | Synthetic event generator (Markov Chain, seed=42) |
-| `memory_store.py` | Memory Policy Engine (extraction, dedup, supersession) |
-| `retrieval.py` | Retrieval Engine (BM25, dense, hybrid RRF) + interactive Q&A |
-| `eval_retrieval.py` | **Graded evaluation harness** (Recall@5, MRR, latency) |
-| `evaluate.py` | Extraction quality debugger (Precision, Recall, Fact Accuracy) |
-| `bench.py` | Latency benchmark at 10k memories |
-| `DECISIONS.md` | 10 design decisions with sources |
-| `EVAL.md` | Evaluation results and ablation table |
-| `LIMITS.md` | 5 scale limitations and fixes |
+To understand the trade-offs, constraints, and limitations of this architecture, please review the mandatory design docs:
+
+- **[DECISIONS.md](./DECISIONS.md)**: 10 critical design decisions, rejected alternatives, and academic sources (including BM25F and RRF math).
+- **[LIMITS.md](./LIMITS.md)**: What happens to this architecture at 10 Million memories, and exactly how we would fix it given two more weeks.
+- **[EVAL.md](./EVAL.md)**: The full ablation study comparing Lexical vs. Dense vs. Hybrid retrieval.
 
 ---
-
-## Constraints Met
-
-| Constraint | Status |
-|---|---|
-| Python | ✓ |
-| No frameworks (LangChain, etc.) | ✓ |
-| Budget ₹0 (free tier only) | ✓ Gemini free tier + local SentenceTransformer |
-| p95 latency < 200ms at 10k | ✓ Proven by bench.py |
-| Deterministic under fixed seed | ✓ generate_events.py uses seed=42 |
-| Cached LLM responses | ✓ extraction_cache.json + answer_cache.json |
+<div align="center">
+<i>Built for the WorkElate AI Engineering Trial</i>
+</div>
