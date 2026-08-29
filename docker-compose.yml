@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  memory-engine:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./data:/app/data
