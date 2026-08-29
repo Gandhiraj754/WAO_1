@@ -19,6 +19,9 @@
 
 ## 🚀 1. Setup in Five Minutes or Less
 
+> [!NOTE]  
+> **Instant Plug-and-Play:** This repository includes a pre-built, fully-hydrated `data/memory.db` file. It already contains the 98 active memories, FTS5 lexical indexes, and `sqlite-vec` semantic embeddings generated from our 95-day simulated startup lifecycle. You do **not** need to run the 40-minute LLM ingestion pipeline yourself. You can boot the API and instantly query it.
+
 WAO-Recall is completely self-contained. The absolute best way to run this is via Docker. We have pre-downloaded the HuggingFace `all-MiniLM-L6-v2` embedding model directly inside the Docker image, so it boots instantly without downloading gigabytes of weights at runtime.
 
 ### Option A: The 1-Click Docker Setup (Recommended)
@@ -31,6 +34,8 @@ WAO-Recall is completely self-contained. The absolute best way to run this is vi
    ```bash
    echo "GEMINI_API_KEY=your_key_here" > .env
    ```
+   *(Troubleshooting: If you see any startup errors or 500 codes, it almost always means your `.env` file is missing or your API key is invalid. Ensure your key is in `.env` and you are good to go.)*
+
 3. Boot the container:
    ```bash
    docker-compose up --build
@@ -38,12 +43,31 @@ WAO-Recall is completely self-contained. The absolute best way to run this is vi
 *Wait ~10 seconds. You will see a massive success banner in your terminal. The API is now live at `http://localhost:8000`.*
 
 ### Option B: Native Python Setup
-If you do not have Docker installed, you can run the engine natively:
+If you do not have Docker installed, you can run the engine natively.
+
+**For macOS / Linux:**
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-export GEMINI_API_KEY="your_key_here" # On Windows use: set GEMINI_API_KEY=your_key_here
+export GEMINI_API_KEY="your_key_here"
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+
+**For Windows (PowerShell):**
+```powershell
+# 1. Allow script execution for this session if blocked
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# 2. Create and activate virtual environment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install dependencies and set key
+pip install -r requirements.txt
+$env:GEMINI_API_KEY="your_key_here"
+
+# 4. Start the server
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
@@ -213,4 +237,7 @@ To understand the trade-offs, constraints, and limitations of this architecture,
 - **[LIMITS.md](./LIMITS.md)**: What happens to this architecture at 10 Million memories, and exactly how we would fix it given two more weeks.
 - **[EVAL.md](./EVAL.md)**: The full ablation study comparing Lexical vs. Dense vs. Hybrid retrieval.
 
-
+---
+<div align="center">
+<i>Built for the WorkElate AI Engineering Trial</i>
+</div>
