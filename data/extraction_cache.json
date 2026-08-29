@@ -1,0 +1,662 @@
+{
+  "evt_b8df0a92": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "company",
+      "attribute": "product focus",
+      "value": "memory systems for AI products",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_ad543d69": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "issue",
+      "attribute": "priority",
+      "value": "bumped due to production impact",
+      "expires_at": null,
+      "importance_score": 0.7
+    }
+  },
+  "evt_4f3bc18e": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "attendance",
+      "value": "5 minutes late due to grabbing coffee",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_3d71f341": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "team",
+      "attribute": "social activity",
+      "value": "watched sports match",
+      "expires_at": null,
+      "importance_score": 0.0
+    }
+  },
+  "evt_c213f6e6": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "status",
+      "value": "feeling tired and signing off early",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_1adbb86d": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "description",
+      "attribute": "status",
+      "value": "updated to clarify acceptance criteria",
+      "expires_at": null,
+      "importance_score": 0.5
+    }
+  },
+  "evt_90518ffb": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "infrastructure migration",
+      "attribute": "scheduled date",
+      "value": "April",
+      "expires_at": "2026-05-01T00:00:00Z",
+      "importance_score": 0.7
+    }
+  },
+  "evt_bb162203": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "UI components",
+      "attribute": "opinion",
+      "value": "looking great",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_44a314c3": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "project",
+      "attribute": "technology",
+      "value": "AI that remembers things",
+      "expires_at": null,
+      "importance_score": 0.8
+    }
+  },
+  "evt_37d34e48": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Sharath",
+      "attribute": "role",
+      "value": "CTO",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_ac3d368f": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "description",
+      "attribute": "status",
+      "value": "updated to clarify acceptance criteria",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_9c487e66": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "frontend rewrite",
+      "attribute": "meeting",
+      "value": "sync up later",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_e4193eec": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "database",
+      "attribute": "technology stack",
+      "value": "MongoDB",
+      "expires_at": "2026-06-01T00:00:00Z",
+      "importance_score": 0.7
+    }
+  },
+  "evt_560a36e6": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "startup",
+      "attribute": "focus",
+      "value": "giving memory to AI agents",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_610efab6": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "architectural decision record",
+      "attribute": "status",
+      "value": "drafting",
+      "expires_at": null,
+      "importance_score": 0.3
+    }
+  },
+  "evt_fa420977": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "README",
+      "attribute": "content",
+      "value": "expanded section on environment variables",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_c921f477": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "team",
+      "attribute": "social",
+      "value": "match last night",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_63deba0b": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "lunch",
+      "attribute": "meal plan",
+      "value": "pizza",
+      "expires_at": null,
+      "importance_score": 0.0
+    }
+  },
+  "evt_12f4a09e": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Q3 roadmap",
+      "attribute": "status",
+      "value": "draft added",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_af53e8aa": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "invoice",
+      "attribute": "review status",
+      "value": "pending review",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_6f9ee746": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "attendance",
+      "value": "5 minutes late due to grabbing coffee",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_18491522": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "status",
+      "value": "feeling tired and signing off early",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_0ec1eb0f": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "lunch",
+      "attribute": "plan",
+      "value": "pizza",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_73f67289": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user onboarding guide",
+      "attribute": "status",
+      "value": "fixing typos",
+      "expires_at": null,
+      "importance_score": 0.3
+    }
+  },
+  "evt_a7719ebb": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "infrastructure migration",
+      "attribute": "schedule",
+      "value": "April",
+      "expires_at": "2026-05-01T00:00:00Z",
+      "importance_score": 0.7
+    }
+  },
+  "evt_dca16f1d": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Sohil",
+      "attribute": "launch decision responsibility",
+      "value": "owner",
+      "expires_at": null,
+      "importance_score": 0.8
+    }
+  },
+  "evt_c6d9d744": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "attendance",
+      "value": "5 minutes late due to grabbing coffee",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_99fb1831": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "company",
+      "attribute": "incorporation date",
+      "value": "January 1, 2026",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_0149971f": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "README",
+      "attribute": "content",
+      "value": "expanded environment variables section",
+      "expires_at": null,
+      "importance_score": 0.5
+    }
+  },
+  "evt_eb0f1d34": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "design mocks",
+      "attribute": "approval status",
+      "value": "pending",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_fd6faa58": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "company",
+      "attribute": "incorporation date",
+      "value": "2026-01-01",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_82d28ace": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "frontend",
+      "attribute": "rewrite",
+      "value": "discussion sync",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_a0b32621": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Q2 budget",
+      "attribute": "status",
+      "value": "approved by Sohil",
+      "expires_at": null,
+      "importance_score": 0.8
+    }
+  },
+  "evt_6ca807cf": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "architectural decision record",
+      "attribute": "status",
+      "value": "drafting",
+      "expires_at": null,
+      "importance_score": 0.3
+    }
+  },
+  "evt_fb663a63": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "application",
+      "attribute": "error",
+      "value": "500 error",
+      "expires_at": "2026-02-01T00:00:00Z",
+      "importance_score": 0.6
+    }
+  },
+  "evt_a727eb06": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "codebase",
+      "attribute": "update",
+      "value": "pushed changes",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_df16f610": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "weather",
+      "attribute": "condition",
+      "value": "heavy rain",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_268ceafb": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "backend",
+      "attribute": "technology",
+      "value": "Python",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_a0b62045": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "auth service",
+      "attribute": "pull request",
+      "value": "needs review",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_f5d2e1c7": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Q3 roadmap",
+      "attribute": "status",
+      "value": "draft added",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_8e65b8a9": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "lunch",
+      "attribute": "plan",
+      "value": "pizza",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_413bcbb2": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "README",
+      "attribute": "content",
+      "value": "expanded section on environment variables",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_d138b867": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "design assets",
+      "attribute": "status",
+      "value": "blocked",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_1809c813": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "application",
+      "attribute": "error",
+      "value": "500 error",
+      "expires_at": "2026-02-01T00:00:00Z",
+      "importance_score": 0.6
+    }
+  },
+  "evt_d58a1bbb": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Q2 budget",
+      "attribute": "status",
+      "value": "approved by Sohil",
+      "expires_at": null,
+      "importance_score": 0.8
+    }
+  },
+  "evt_37a6f9dd": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "all-hands meeting",
+      "attribute": "schedule",
+      "value": "Friday",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_049b8e41": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "attendance",
+      "value": "5 minutes late due to coffee",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_259d15f0": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "morning sync",
+      "attribute": "notes",
+      "value": "added",
+      "expires_at": null,
+      "importance_score": 0.5
+    }
+  },
+  "evt_165d2caa": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "internet",
+      "attribute": "status",
+      "value": "lagging due to rain",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_6349dd9c": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "API documentation",
+      "attribute": "status",
+      "value": "updated with new endpoints",
+      "expires_at": null,
+      "importance_score": 0.6
+    }
+  },
+  "evt_75c8a185": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "user",
+      "attribute": "intent",
+      "value": "look at bug ticket after lunch",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_c8e037b4": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "design mocks",
+      "attribute": "status",
+      "value": "pending approval",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_7ce663b9": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "changes",
+      "attribute": "status",
+      "value": "pushed",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  },
+  "evt_b90f9b36": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "company",
+      "attribute": "incorporation date",
+      "value": "January 1, 2026",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_69a60383": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "main branch",
+      "attribute": "deployment",
+      "value": "merging hotfix",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_2b20faea": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "application",
+      "attribute": "error status",
+      "value": "500 error",
+      "expires_at": "2026-02-01T00:00:00Z",
+      "importance_score": 0.6
+    }
+  },
+  "evt_d06a7d45": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "internet",
+      "attribute": "status",
+      "value": "lagging due to rain",
+      "expires_at": null,
+      "importance_score": 0.1
+    }
+  },
+  "evt_05c2eca7": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "staging environment",
+      "attribute": "status",
+      "value": "down",
+      "expires_at": "2026-02-01T00:00:00Z",
+      "importance_score": 0.6
+    }
+  },
+  "evt_e664fedf": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": true,
+      "entity": "Gandhi",
+      "attribute": "role",
+      "value": "Lead Engineer",
+      "expires_at": null,
+      "importance_score": 0.9
+    }
+  },
+  "evt_a1fd645c": {
+    "heuristic_drop": false,
+    "extracted": {
+      "is_important": false,
+      "entity": "frontend rewrite",
+      "attribute": "status",
+      "value": "sync needed",
+      "expires_at": null,
+      "importance_score": 0.2
+    }
+  }
+}

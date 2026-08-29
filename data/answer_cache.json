@@ -1,0 +1,344 @@
+{
+  "q01": {
+    "answer": "The backend is built in Go [mem_3816f0e5].",
+    "cited_memory_ids": [
+      "mem_3816f0e5",
+      "mem_6ccd88b8",
+      "mem_39d6c698",
+      "mem_7a74bb8b",
+      "mem_e7db2ea7"
+    ],
+    "confidence": 0.95
+  },
+  "q02": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q03": {
+    "answer": "The official company name is NexGenAI [mem_b1048464].",
+    "cited_memory_ids": [
+      "mem_3c6def42",
+      "mem_cbcffdfc",
+      "mem_d811c801",
+      "mem_6a786199",
+      "mem_b1048464"
+    ],
+    "confidence": 0.95
+  },
+  "q04": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q05": {
+    "answer": "The payment provider integrated for checkout is PayPal [mem_bfa0e29e].",
+    "cited_memory_ids": [
+      "mem_7a7dc4ee",
+      "mem_bfa0e29e",
+      "mem_106fc373",
+      "mem_b1048464",
+      "mem_39d6c698"
+    ],
+    "confidence": 0.95
+  },
+  "q06": {
+    "answer": "The product's launch timeline is delayed to Q3 [mem_cd0df152].",
+    "cited_memory_ids": [
+      "mem_c36e5093",
+      "mem_1729a2d2",
+      "mem_cd0df152",
+      "mem_82753955",
+      "mem_6a786199"
+    ],
+    "confidence": 0.95
+  },
+  "q07": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q08": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q09": {
+    "answer": "Yes, the checkout's payment_gateway is PayPal [mem_bfa0e29e].",
+    "cited_memory_ids": [
+      "mem_2e9631fb",
+      "mem_2f05ae3a",
+      "mem_106fc373",
+      "mem_bfa0e29e",
+      "mem_ea2cdcf9"
+    ],
+    "confidence": 0.95
+  },
+  "q10": {
+    "answer": "No, the backend's technology is Go [mem_3816f0e5].",
+    "cited_memory_ids": [
+      "mem_ed183e60",
+      "mem_3816f0e5",
+      "mem_6ccd88b8",
+      "mem_39d6c698",
+      "mem_7a74bb8b"
+    ],
+    "confidence": 0.95
+  },
+  "q11": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q12": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q13": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q14": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q15": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q16": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q17": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q18": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q19": {
+    "answer": "Sharath is the CTO [mem_6c32b6b4] and the backend is written in Go [mem_3816f0e5].",
+    "cited_memory_ids": [
+      "mem_6c32b6b4",
+      "mem_3816f0e5",
+      "mem_6ccd88b8",
+      "mem_3428df33",
+      "mem_7a74bb8b"
+    ],
+    "confidence": 0.95
+  },
+  "q20": {
+    "answer": "The cloud provider chosen is AWS [mem_7a7dc4ee], and the budget was approved by Sohil [mem_0792cc45].",
+    "cited_memory_ids": [
+      "mem_0792cc45",
+      "mem_1730929e",
+      "mem_8741e158",
+      "mem_2f05ae3a",
+      "mem_7a7dc4ee"
+    ],
+    "confidence": 0.95
+  },
+  "q21": {
+    "answer": "The company's name is NexGenAI [mem_b1048464] and it was incorporated on Jan 1st, 2026 [mem_82753955], [mem_6a786199].",
+    "cited_memory_ids": [
+      "mem_82753955",
+      "mem_3c6def42",
+      "mem_cbcffdfc",
+      "mem_6a786199",
+      "mem_b1048464"
+    ],
+    "confidence": 0.95
+  },
+  "q22": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q23": {
+    "answer": "The company uses Stripe for payments [mem_106fc373] and PayPal for checkout [mem_bfa0e29e]. The CEO is Sohil [mem_d811c801].",
+    "cited_memory_ids": [
+      "mem_d811c801",
+      "mem_b1048464",
+      "mem_106fc373",
+      "mem_bfa0e29e",
+      "mem_39d6c698"
+    ],
+    "confidence": 0.95
+  },
+  "q24": {
+    "answer": "Sohil is the Launch Decision Owner [mem_2eaa65fb], and the product's launch is targeted for Q1 [mem_1729a2d2].",
+    "cited_memory_ids": [
+      "mem_27ec05eb",
+      "mem_2eaa65fb",
+      "mem_1729a2d2",
+      "mem_c36e5093",
+      "mem_4d22b127"
+    ],
+    "confidence": 0.95
+  },
+  "q25": {
+    "answer": "The company's registration number is 99887766 [mem_3c6def42], [mem_cbcffdfc], and the CTO is Sharath [mem_6c32b6b4].",
+    "cited_memory_ids": [
+      "mem_82753955",
+      "mem_6c32b6b4",
+      "mem_3c6def42",
+      "mem_cbcffdfc",
+      "mem_6a786199"
+    ],
+    "confidence": 0.95
+  },
+  "q26": {
+    "answer": "We use PostgreSQL [mem_39d6c698] and the selected cloud provider is AWS [mem_7a7dc4ee].",
+    "cited_memory_ids": [
+      "mem_7a7dc4ee",
+      "mem_39d6c698",
+      "mem_6b070092",
+      "mem_e7db2ea7",
+      "mem_cbcffdfc"
+    ],
+    "confidence": 0.95
+  },
+  "q27": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q28": {
+    "answer": "The company was incorporated on Jan 1st, 2026 [mem_82753955], [mem_6a786199].",
+    "cited_memory_ids": [
+      "mem_82753955",
+      "mem_3c6def42",
+      "mem_cbcffdfc",
+      "mem_6a786199",
+      "mem_b1048464"
+    ],
+    "confidence": 0.95
+  },
+  "q29": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q30": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q31": {
+    "answer": "No, the launch is delayed to Q3 [mem_cd0df152].",
+    "cited_memory_ids": [
+      "mem_2f05ae3a",
+      "mem_1729a2d2",
+      "mem_cd0df152",
+      "mem_0ffdffd0",
+      "mem_2e9631fb"
+    ],
+    "confidence": 0.95
+  },
+  "q32": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q33": {
+    "answer": "Sohil is the CEO [mem_d811c801].",
+    "cited_memory_ids": [
+      "mem_d811c801",
+      "mem_82753955",
+      "mem_6a786199",
+      "mem_b1048464",
+      "mem_7f75db6d"
+    ],
+    "confidence": 0.95
+  },
+  "q34": {
+    "answer": "The core product is an AI memory layer [mem_16151046].",
+    "cited_memory_ids": [
+      "mem_c36e5093",
+      "mem_6a786199",
+      "mem_16151046",
+      "mem_8744f7f6",
+      "mem_c5cf3445"
+    ],
+    "confidence": 0.95
+  },
+  "q35": {
+    "answer": "The company's registration number is 99887766 [mem_3c6def42], [mem_cbcffdfc].",
+    "cited_memory_ids": [
+      "mem_82753955",
+      "mem_b9e4154d",
+      "mem_3c6def42",
+      "mem_cbcffdfc",
+      "mem_6a786199"
+    ],
+    "confidence": 0.95
+  },
+  "q36": {
+    "answer": "Gandhi is the Lead Engineer [mem_e4ff0cb3].",
+    "cited_memory_ids": [
+      "mem_e4ff0cb3",
+      "mem_d811c801",
+      "mem_6ccd88b8",
+      "mem_6c32b6b4",
+      "mem_dda430fb"
+    ],
+    "confidence": 0.95
+  },
+  "q37": {
+    "answer": "Yes, the team is hiring a frontend developer [mem_6ccd88b8].",
+    "cited_memory_ids": [
+      "mem_6ccd88b8",
+      "mem_d811c801",
+      "mem_3c6def42",
+      "mem_2f05ae3a",
+      "mem_cbcffdfc"
+    ],
+    "confidence": 0.95
+  },
+  "q38": {
+    "answer": "Sohil approved the budget for Q2 [mem_0792cc45], [mem_1730929e], [mem_8741e158], [mem_2f05ae3a].",
+    "cited_memory_ids": [
+      "mem_0792cc45",
+      "mem_1730929e",
+      "mem_8741e158",
+      "mem_2f05ae3a",
+      "mem_2e9631fb"
+    ],
+    "confidence": 0.95
+  },
+  "q39": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q40": {
+    "answer": "Sohil owns the launch decision [mem_27ec05eb], [mem_2eaa65fb].",
+    "cited_memory_ids": [
+      "mem_27ec05eb",
+      "mem_2eaa65fb",
+      "mem_1729a2d2",
+      "mem_4d22b127",
+      "mem_c36e5093"
+    ],
+    "confidence": 0.95
+  },
+  "q41": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  },
+  "q42": {
+    "answer": "I don't have that in memory",
+    "cited_memory_ids": [],
+    "confidence": 1.0
+  }
+}
