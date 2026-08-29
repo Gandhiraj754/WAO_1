@@ -38,12 +38,31 @@ WAO-Recall is completely self-contained. The absolute best way to run this is vi
 *Wait ~10 seconds. You will see a massive success banner in your terminal. The API is now live at `http://localhost:8000`.*
 
 ### Option B: Native Python Setup
-If you do not have Docker installed, you can run the engine natively:
+If you do not have Docker installed, you can run the engine natively.
+
+**For macOS / Linux:**
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-export GEMINI_API_KEY="your_key_here" # On Windows use: set GEMINI_API_KEY=your_key_here
+export GEMINI_API_KEY="your_key_here"
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+
+**For Windows (PowerShell):**
+```powershell
+# 1. Allow script execution for this session if blocked
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# 2. Create and activate virtual environment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install dependencies and set key
+pip install -r requirements.txt
+$env:GEMINI_API_KEY="your_key_here"
+
+# 4. Start the server
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
