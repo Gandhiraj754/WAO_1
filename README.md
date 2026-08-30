@@ -238,6 +238,3 @@ To understand the trade-offs, constraints, and limitations of this architecture,
 - **[EVAL.md](./EVAL.md)**: The full ablation study comparing Lexical vs. Dense vs. Hybrid retrieval.
 
 ---
-<div align="center">
-<i>Built for the WorkElate AI Engineering Trial</i>
-</div>
