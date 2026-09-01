@@ -13,7 +13,6 @@ ENV/
 .env
 
 # Database files (generated, not source)
-data/memory.db
 data/bench_temp.db
 
 
@@ -35,3 +34,7 @@ Thumbs.db
 *.pdf
 WhatsApp*
 WAO-Recall*Trial*
+topics_revision/
+project_gaps_analysis.md
+file_by_file_breakdown.md
+MASTER_INTERVIEW_DEFENSE.md
