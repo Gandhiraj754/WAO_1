@@ -172,7 +172,7 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 
 ```json
 {
-  "user_id": "u_sohil",
+  "user_id": "u_sharath",
   "question": "What is our backend programming language?"
 }
 ```
@@ -184,7 +184,7 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 
 ```json
 {
-  "user_id": "u_gandhi",
+  "user_id": "u_sharath",
   "question": "Which cloud infrastructure provider did we decide to migrate to?"
 }
 ```

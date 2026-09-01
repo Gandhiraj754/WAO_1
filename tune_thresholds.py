@@ -37,7 +37,7 @@ def tune_thresholds():
         
     print("\nStep 2: Testing different thresholds instantaneously...\n")
     
-    thresholds_to_test = [0.50, 0.60, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
+    thresholds_to_test = [0.45, 0.50, 0.60, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
     
     best_f1 = 0
     best_threshold = 0
