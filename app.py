@@ -3,14 +3,17 @@ from pydantic import BaseModel
 from retrieval import ask_question
 from typing import List
 
-app = FastAPI(title="WAO-Recall API")
+from contextlib import asynccontextmanager
 
-@app.on_event("startup")
-async def print_clickable_link():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     print("\n" + "="*60)
     print("🚀 API is running perfectly inside Docker!")
     print("👉 CLICK HERE TO TEST THE API: http://localhost:8000/docs")
     print("="*60 + "\n")
+    yield
+
+app = FastAPI(title="WAO-Recall API", lifespan=lifespan)
 
 class AskRequest(BaseModel):
     user_id: str

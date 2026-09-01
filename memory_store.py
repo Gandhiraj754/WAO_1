@@ -49,6 +49,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS memories (
             memory_id TEXT PRIMARY KEY,
+            user_id TEXT,
             fact TEXT,
             entity TEXT,
             attribute TEXT,
@@ -224,16 +225,47 @@ Input Events:
             if importance < self.LLM_CONFIDENCE_THRESHOLD: 
                 continue
                 
-            self._insert_memory_logic(ev["event_id"], ev["timestamp"], extracted)
+            self._insert_memory_logic(ev["event_id"], ev["timestamp"], extracted, ev["user_id"])
 
     def resolve_semantic_collision(self, new_fact: str, old_fact: str) -> str:
-        """Returns DUPLICATE, SUPERSEDE, or NEW.
-        Heuristic fallback: The exact entity/attribute match handles 95% of supersedes. 
-        For anything else, we default to NEW to avoid a 4-second LLM API call per collision, 
-        guaranteeing the entire database builds in exactly 2 minutes."""
+        """Returns DUPLICATE, SUPERSEDE, or NEW using LLM."""
+        prompt = f"""You are an AI resolving a memory collision.
+Old Memory: {old_fact}
+New Memory: {new_fact}
+
+Compare them:
+1. If the new memory is essentially the same fact as the old one (e.g., restated), return DUPLICATE.
+2. If the new memory is an update/change to the same subject (e.g. state changed, technology changed), return SUPERSEDE.
+3. If they are about completely different subjects despite semantic similarity, return NEW.
+
+Return ONLY one word: DUPLICATE, SUPERSEDE, or NEW.
+"""
+        models = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']
+        for model_name in models:
+            retries = 0
+            while retries < 3:
+                try:
+                    time.sleep(4.2)
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config={'temperature': 0.0}
+                    )
+                    action = response.text.strip().upper()
+                    if action in ["DUPLICATE", "SUPERSEDE", "NEW"]:
+                        return action
+                    return "NEW"
+                except Exception as e:
+                    err = str(e)
+                    if '429' in err:
+                        print(f"[{model_name}] Quota exceeded in collision check. Falling back...")
+                        break
+                    print(f"API Error in collision check: {err[:50]}... Retrying in 5s...")
+                    time.sleep(5)
+                    retries += 1
         return "NEW"
 
-    def _insert_memory_logic(self, event_id: str, timestamp: str, extracted: Dict):
+    def _insert_memory_logic(self, event_id: str, timestamp: str, extracted: Dict, user_id: str):
             
         entity = extracted.get("entity")
         attribute = extracted.get("attribute")
@@ -294,9 +326,9 @@ Input Events:
         if resolved_action == "NEW":
             print(f"[{event_id}] -> NEW MEMORY: {fact_text}")
             self.cursor.execute("""
-                INSERT INTO memories (memory_id, fact, entity, attribute, value, created_at, expires_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (new_memory_id, fact_text, entity, attribute, new_value, timestamp, expires_at))
+                INSERT INTO memories (memory_id, user_id, fact, entity, attribute, value, created_at, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (new_memory_id, user_id, fact_text, entity, attribute, new_value, timestamp, expires_at))
             self.cursor.execute("INSERT INTO memory_sources (memory_id, event_id) VALUES (?, ?)", (new_memory_id, event_id))
             self.cursor.execute("INSERT INTO memories_vec (memory_id, embedding) VALUES (?, ?)", (new_memory_id, vec_bytes))
             self.cursor.execute("INSERT INTO memories_fts (memory_id, entity, attribute, fact) VALUES (?, ?, ?, ?)", (new_memory_id, entity, attribute, fact_text))
@@ -309,9 +341,9 @@ Input Events:
             print(f"[{event_id}] -> SUPERSEDES {target_old_id} with: {fact_text}")
             self.cursor.execute("UPDATE memories SET status = 'SUPERSEDED', superseded_by = ? WHERE memory_id = ?", (new_memory_id, target_old_id))
             self.cursor.execute("""
-                INSERT INTO memories (memory_id, fact, entity, attribute, value, created_at, expires_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (new_memory_id, fact_text, entity, attribute, new_value, timestamp, expires_at))
+                INSERT INTO memories (memory_id, user_id, fact, entity, attribute, value, created_at, expires_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (new_memory_id, user_id, fact_text, entity, attribute, new_value, timestamp, expires_at))
             self.cursor.execute("INSERT INTO memory_sources (memory_id, event_id) VALUES (?, ?)", (new_memory_id, event_id))
             self.cursor.execute("INSERT INTO memories_vec (memory_id, embedding) VALUES (?, ?)", (new_memory_id, vec_bytes))
             self.cursor.execute("INSERT INTO memories_fts (memory_id, entity, attribute, fact) VALUES (?, ?, ?, ?)", (new_memory_id, entity, attribute, fact_text))
@@ -345,7 +377,8 @@ def ingest_events(db: sqlite3.Connection, events_file: str):
                 batch.append({
                     "event_id": event_id,
                     "text": payload_text,
-                    "timestamp": event["timestamp"]
+                    "timestamp": event["timestamp"],
+                    "user_id": event["user_id"]
                 })
                 
             total_processed += 1
