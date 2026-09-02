@@ -77,6 +77,7 @@ def setup_bench_db():
     cursor.execute("""
         CREATE TABLE memories (
             memory_id TEXT PRIMARY KEY,
+            user_id TEXT,
             fact TEXT,
             entity TEXT,
             attribute TEXT,
@@ -90,6 +91,8 @@ def setup_bench_db():
     cursor.execute("""
         CREATE VIRTUAL TABLE memories_fts USING fts5(
             memory_id UNINDEXED,
+            entity,
+            attribute,
             fact
         )
     """)
@@ -115,11 +118,11 @@ def setup_bench_db():
             vec = np.random.randn(VECTOR_DIM).astype(np.float32).tolist()
 
         cursor.execute(
-            "INSERT INTO memories (memory_id, fact, status, created_at) VALUES (?, ?, 'CURRENT', '2026-01-01T00:00:00Z')",
-            (mem_id, fact)
+            "INSERT INTO memories (memory_id, user_id, fact, status, created_at) VALUES (?, ?, ?, 'CURRENT', '2026-01-01T00:00:00Z')",
+            (mem_id, "u_sohil", fact)
         )
         cursor.execute(
-            "INSERT INTO memories_fts (memory_id, fact) VALUES (?, ?)",
+            "INSERT INTO memories_fts (memory_id, entity, attribute, fact) VALUES (?, '', '', ?)",
             (mem_id, fact)
         )
         cursor.execute(
@@ -143,14 +146,15 @@ def bench_lexical(db, query):
     if not safe_query:
         safe_query = "dummy"
     cursor.execute("""
-        SELECT f.memory_id, f.fact, bm25(f.memories_fts) as score
+        SELECT f.memory_id, f.fact, bm25(f.memories_fts, 5.0, 3.0, 1.0) as score
         FROM memories_fts f
         JOIN memories m ON f.memory_id = m.memory_id
         WHERE f.memories_fts MATCH ?
         AND m.status = 'CURRENT'
+        AND m.user_id = ?
         ORDER BY score
         LIMIT 5
-    """, (safe_query,))
+    """, (safe_query, "u_sohil"))
     return cursor.fetchall()
 
 
@@ -164,8 +168,9 @@ def bench_dense(db, query):
         JOIN memories m ON v.memory_id = m.memory_id
         WHERE v.embedding MATCH ? AND v.k = 5
         AND m.status = 'CURRENT'
+        AND m.user_id = ?
         ORDER BY v.distance
-    """, (serialize_f32(query_vec),))
+    """, (serialize_f32(query_vec), "u_sohil"))
     return cursor.fetchall()
 
 
@@ -213,7 +218,7 @@ def run_benchmark():
         p50 = np.percentile(latencies, 50)
         p95 = np.percentile(latencies, 95)
         p99 = np.percentile(latencies, 99)
-        status = "✓ PASS" if p95 < 200 else "✗ FAIL"
+        status = "[PASS]" if p95 < 200 else "[FAIL]"
 
         print(f"{name:<25} | {p50:>9.1f}ms | {p95:>9.1f}ms | {p99:>9.1f}ms | {status:>10}")
 

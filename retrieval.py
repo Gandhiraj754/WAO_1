@@ -31,7 +31,7 @@ def get_db():
     db.row_factory = sqlite3.Row
     return db
 
-def lexical_search(query: str, k: int = 20) -> List[Dict]:
+def lexical_search(query: str, user_id: str, k: int = 20) -> List[Dict]:
     """BM25 search using SQLite FTS5."""
     db = get_db()
     cursor = db.cursor()
@@ -39,33 +39,35 @@ def lexical_search(query: str, k: int = 20) -> List[Dict]:
     import re
     # Remove punctuation from query to prevent FTS5 syntax errors (like the '?' character)
     safe_query = re.sub(r'[^a-zA-Z0-9\s]', ' ', query).strip()
-    if not safe_query:
-        safe_query = "dummy"
+    
+    # Remove common stopwords to prevent noisy OR expansions
+    stopwords = {'what', 'is', 'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'are', 'we', 'our', 'my', 'do', 'does', 'did', 'who', 'where', 'when', 'why', 'how'}
+    words = [w for w in safe_query.split() if w.lower() not in stopwords]
+    if not words:
+        words = ["dummy"]
         
-    # FTS5 interprets space-separated words as an AND query by default.
-    # A natural language question will fail unless we join terms with OR.
-    fts_query = " OR ".join(safe_query.split())
+    fts_query = " OR ".join(words)
 
     # FTS5 bm25() returns a negative number, where more negative is better.
     # We order by bm25() to get the best matches.
     # We use BM25F (BM25 for Fields).
     # weights: entity=5.0, attribute=3.0, fact=1.0
-    # This massively boosts relevance if the user's query exactly hits the LLM-extracted entity or attribute!
     cursor.execute("""
         SELECT f.memory_id, f.fact, bm25(f.memories_fts, 5.0, 3.0, 1.0) as score
         FROM memories_fts f
         JOIN memories m ON f.memory_id = m.memory_id
         WHERE f.memories_fts MATCH ? 
         AND m.status = 'CURRENT'
+        AND m.user_id = ?
         AND (m.expires_at IS NULL OR m.expires_at > datetime('now'))
         ORDER BY score
         LIMIT ?
-    """, (fts_query, k))
+    """, (fts_query, user_id, k))
     results = [dict(row) for row in cursor.fetchall()]
     db.close()
     return results
 
-def dense_search(query: str, k: int = 20) -> List[Dict]:
+def dense_search(query: str, user_id: str, k: int = 20) -> List[Dict]:
     """Semantic search using sqlite-vec."""
     db = get_db()
     cursor = db.cursor()
@@ -73,23 +75,24 @@ def dense_search(query: str, k: int = 20) -> List[Dict]:
     query_embedding = model.encode(query).tolist()
     
     cursor.execute("""
-        SELECT v.memory_id, v.distance
+        SELECT v.memory_id, m.fact, v.distance
         FROM memories_vec v
         JOIN memories m ON v.memory_id = m.memory_id
         WHERE v.embedding MATCH ? AND v.k = ?
         AND m.status = 'CURRENT'
+        AND m.user_id = ?
         AND (m.expires_at IS NULL OR m.expires_at > datetime('now'))
         ORDER BY v.distance
-    """, (serialize_f32(query_embedding), k))
+    """, (serialize_f32(query_embedding), k, user_id))
     
     results = [dict(row) for row in cursor.fetchall()]
     db.close()
     return results
 
-def hybrid_search(query: str, k: int = 5) -> List[Dict]:
+def hybrid_search(query: str, user_id: str, k: int = 5) -> List[Dict]:
     """Fuses Lexical and Dense search using RRF and Recency Decay."""
-    lex_results = lexical_search(query, k=20)
-    dense_results = dense_search(query, k=20)
+    lex_results = lexical_search(query, user_id, k=20)
+    dense_results = dense_search(query, user_id, k=20)
     
     # Calculate RRF (Reciprocal Rank Fusion)
     # RRF Score = 1 / (60 + rank)
@@ -119,8 +122,10 @@ def hybrid_search(query: str, k: int = 5) -> List[Dict]:
         # Since created_at is an ISO string, we can parse it and add a tiny recency bonus.
         # This solves the "5 temporal cases" requirement.
         try:
-            memory_time = datetime.fromisoformat(row["created_at"]).timestamp()
-            current_time = datetime.utcnow().timestamp()
+            from datetime import timezone
+            mem_dt = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
+            memory_time = mem_dt.timestamp()
+            current_time = datetime.now(timezone.utc).timestamp()
             age_in_seconds = current_time - memory_time
             # Very subtle decay multiplier: decays slowly over time
             decay_factor = 1.0 / (1.0 + (age_in_seconds / 86400.0) * 0.01)
@@ -144,8 +149,9 @@ def hybrid_search(query: str, k: int = 5) -> List[Dict]:
 def ask_question(user_id: str, question: str) -> Dict[str, Any]:
     """The strict POST /ask endpoint required by the WAO rubric."""
     
-    # 1. Retrieve the top 5 most relevant memories
-    top_memories = hybrid_search(question, k=5)
+    # 1. Retrieve the top 5 most relevant memories using Dense Search
+    # As proven by EVAL.md, Dense search outperforms Hybrid (82.4% vs 58.8%).
+    top_memories = dense_search(question, user_id, k=5)
     
     if not top_memories:
         return {
@@ -187,11 +193,12 @@ def ask_question(user_id: str, question: str) -> Dict[str, Any]:
     
     answer = response.text.strip()
     
-    if "I don't have that in memory" in answer:
+    if "don't have that in memory" in answer.lower() or "do not have" in answer.lower():
         cited_ids = []
         confidence = 1.0
     else:
-        cited_ids = memory_ids # simplified citation tracking for the endpoint
+        import re
+        cited_ids = list(set(re.findall(r'\[(mem_[a-f0-9]{8})\]', answer)))
         confidence = 0.95
         
     return {

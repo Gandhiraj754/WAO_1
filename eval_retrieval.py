@@ -101,9 +101,9 @@ def evaluate_retrieval(queries):
     db = get_db()
 
     configs = {
-        "Lexical (BM25)": lambda q, k: lexical_search(q, k),
-        "Dense (Embeddings)": lambda q, k: dense_search(q, k),
-        "Hybrid (RRF+Recency)": lambda q, k: hybrid_search(q, k),
+        "Lexical (BM25)": lambda q, k: lexical_search(q, "u_sohil", k),
+        "Dense (Embeddings)": lambda q, k: dense_search(q, "u_sohil", k),
+        "Hybrid (RRF+Recency)": lambda q, k: hybrid_search(q, "u_sohil", k),
     }
 
     results_table = {}

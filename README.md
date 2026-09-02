@@ -75,7 +75,7 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 
 ## 🏗️ 2. Architecture Diagram & Full System Flow
 
-WAO-Recall strips away bloated RAG frameworks (like LangChain or LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
+WAO-Recall strips away bloated RAG frameworks (like LangChain or LlamaIndex) in favor of raw, high-performance **SQLite**. It features a dual-engine **Hybrid Search** (Lexical BM25 via BM25F + Dense `sqlite-vec`) fused via **Reciprocal Rank Fusion (RRF)**.
 
 ### The Component Architecture Diagram
 
@@ -172,7 +172,7 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 
 ```json
 {
-  "user_id": "u_sohil",
+  "user_id": "u_sharath",
   "question": "What is our backend programming language?"
 }
 ```
@@ -184,7 +184,7 @@ Copy and paste these exact JSON blocks into the Swagger UI to prove the architec
 
 ```json
 {
-  "user_id": "u_gandhi",
+  "user_id": "u_sharath",
   "question": "Which cloud infrastructure provider did we decide to migrate to?"
 }
 ```

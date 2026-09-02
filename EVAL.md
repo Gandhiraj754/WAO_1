@@ -8,11 +8,11 @@ This document contains the exact empirical benchmark results and ablation study 
 
 *Measured across 42 hand-authored evaluation queries using `python eval_retrieval.py`.*
 
-| Configuration | Recall@5 | MRR | p95 Latency |
+| Config | Recall@5 | MRR | p95 Latency (10k memories) |
 |:---|:---:|:---:|:---:|
-| **Lexical (BM25)** | 64.7% | 0.488 | 3.2 ms |
-| **Dense (Embeddings)** | 82.4% | 0.646 | 14.5 ms |
-| **Hybrid (RRF + Recency)** | 64.7% | 0.370 | 17.1 ms |
+| **Lexical (BM25)** | 64.7% | 0.510 | 0.1 ms |
+| **Dense (Embeddings)** | 82.4% | 0.646 | 26.5 ms |
+| **Hybrid (RRF+Recency)** | 58.8% | 0.418 | 26.3 ms |
 
 > **Reproducibility:** Run `python eval_retrieval.py` to reproduce these numbers deterministically without API keys.
 
@@ -61,9 +61,10 @@ This document contains the exact empirical benchmark results and ablation study 
 
 ## 💡 What Surprised Me
 
-1. **Dense Search Outperformed Lexical on Paraphrased Questions:** In the ablation study, Dense search scored an 82.4% Recall@5 compared to 64.7% for BM25. In workplace chats, users rarely query using the exact keywords stored during ingestion (e.g., querying *"Who leads engineering?"* when the fact stored was *"Sharath is CTO"*). Dense semantic embeddings bridged this vocabulary mismatch effectively.
-2. **The LLM Extraction Rubric is the Decisive Factor:** Without an explicit scoring rubric, the LLM assigned arbitrary importance scores (0.3–0.6) to genuine facts. Introducing the structured rubric (0.8–1.0 Core, 0.5–0.7 State, 0.0–0.4 Noise) and tuning the threshold to $0.45$ via `tune_thresholds.py` pushed extraction Precision and Recall to **96.7%**.
-3. **FTS5 BM25 is Essentially Free:** In the 10,000-memory benchmark, BM25 lookup latency was virtually 0.1ms at p95. SQLite's inverted index in-memory B-Tree is blisteringly fast, making it ideal for exact-match filtering prior to vector ranking.
+1. **Hybrid underperforms Dense:** RRF degrades overall performance (82.4% -> 58.8%) because conversational questions often completely miss BM25 exact keywords, causing the Lexical rank to drag down the Dense rank.
+2. **Dense is robust to synonyms:** It cleanly maps "boss" to "CEO" and "where is the office" to "HSR Layout".
+3. **The LLM Extraction Rubric is the Decisive Factor:** Without an explicit scoring rubric, the LLM assigned arbitrary importance scores (0.3–0.6) to genuine facts. Introducing the structured rubric (0.8–1.0 Core, 0.5–0.7 State, 0.0–0.4 Noise) and tuning the threshold to $0.45$ via `tune_thresholds.py` pushed extraction Precision and Recall to **96.7%**.
+4. **FTS5 BM25 is Essentially Free:** In the 10,000-memory benchmark, BM25 lookup latency was virtually 0.1ms at p95. SQLite's inverted index in-memory B-Tree is blisteringly fast, making it ideal for exact-match filtering prior to vector ranking.
 
 ---
 
